@@ -5,6 +5,7 @@ import configparser
 import os
 import sys
 import time
+import json
 
 # 디바이스
 current_device = 'pc'
@@ -15,7 +16,7 @@ elif os.name == 'nt':
     # PC
     current_device = 'pc'
 
-print('[DEVICE] ' + current_device)
+print('[DEVICE] {}'.format(current_device))
 
 # 크롬 드라이버 로드
 if current_device == 'pc':
@@ -61,16 +62,20 @@ if input_id is not None:
     input_password.send_keys(login_pwd)
     btn_login_submit = browser.find_element_by_css_selector("form[id^='member_form'] [onclick^='MemberAction.login']")
     btn_login_submit.click()
+    print('로그인 완료')
 
 # 원하는 카테고리
 category_list = [28]
 # 1 ~ 6 페이지
 page_list = range(1, 10)
 for cate_no in category_list:
+    print('카테고리 이동 {}'.format(cate_no))
+    time.sleep(delay_term)
     # 브라우저 정보 기록
     browser_info = []
     # 페이지 이동 후 새탭 열기
     for _page in page_list:
+        print('Page check ... {}'.format(_page))
         time.sleep(delay_term)
         link_cate = 'http://choitemb2b.com/product/list.html?cate_no={}&sort_method=5&page={}'.format(cate_no, _page)
         # 탭 이름
@@ -94,10 +99,38 @@ for cate_no in category_list:
             break
 
     # 페이지별 상품 링크 수집
+    goods_links = {}
     for tab_name in browser_info:
+        print('상품 링크 수집 시작')
         time.sleep(delay_term)
         move_tab_idx = browser_info.index(tab_name) + 1
         browser.switch_to.window(browser.window_handles[move_tab_idx])
+        goods_wrap = browser.find_elements_by_css_selector('li.item.DB_rate')
+        for goods_html in goods_wrap:
+            product_link = goods_html.find_element_by_css_selector('.description p.name a').get_attribute('href')
+            product_no_attr = goods_html.find_element_by_css_selector('[product_no]')
+            product_no = product_no_attr.get_attribute('product_no')
+            goods_links[product_no] = product_link
+    jsonString = json.dumps(goods_links)
 
-# browser.close()
+    # 파일로 저장
+    file_path = "./_data/"
+    if os.path.exists(file_path) == False:
+        os.makedirs(file_path)
+    file_name = 'cate_no_{}.json'.format(cate_no)
+    f = open(file_path + file_name, 'w')
+    f.write(jsonString)
+    f.close()
+    print("[SAVE] {}".format(file_name))
+
+# 새탭 브라우저 종료
+for tab_info in browser_info:
+    browser.switch_to.window(browser.window_handles[1])
+    browser.close()
+
+# 메인 브라우저 닫기
+browser.switch_to.window(browser.window_handles[0])
+browser.close()
+# 드라이버 종료
+browser.quit()
 sys.exit()
