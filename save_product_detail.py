@@ -114,6 +114,8 @@ for product_no in product_list:
     # 메인 상품 이미지 파일 저장
     img_file_list = browser.find_elements_by_css_selector('.listImg img')
     img_idx = 1
+    save_product_img = []
+    for_in_seq = 1
     for el_img in img_file_list:
         # 테스트 용
         # break
@@ -131,6 +133,8 @@ for product_no in product_list:
             os.remove(img_file_full_path)
         os.system("curl {} > {}".format(img_url, img_file_full_path))
         img_idx = img_idx + 1
+        save_product_img.append({'img_url': img_url, 'img_file_name': img_file_name, 'img_file_full_path': img_file_full_path, 'seq': for_in_seq})
+        for_in_seq = for_in_seq + 1
 
     # 상품 정보 추출
     el_info_list = el_product_info.find_elements_by_css_selector('table tr')
@@ -178,6 +182,8 @@ for product_no in product_list:
     # 상세 정보 이미지 다운로드
     detail_img_list = el_product_detail_info.find_elements_by_tag_name('img')
     img_idx = 1
+    save_detail_img = []
+    for_in_seq = 1
     for el_img in detail_img_list:
         # time.sleep(delay_term)
         img_url = el_img.get_attribute('ec-data-src')
@@ -193,6 +199,8 @@ for product_no in product_list:
             os.remove(img_file_full_path)
         os.system("curl {} > {}".format(img_full_url, img_file_full_path))
         img_idx = img_idx + 1
+        save_detail_img.append({'img_url': img_url, 'img_file_name': img_file_name, 'img_file_full_path': img_file_full_path, 'seq': for_in_seq})
+        for_in_seq = for_in_seq + 1
 
     # 상품 구매 기타 정보 추출
     prd_info_list = browser.find_elements_by_css_selector(".prd_info.-section")
@@ -217,14 +225,19 @@ for product_no in product_list:
         , 'product_link': product_link
         , 'product_name': product_name
         , 'product_info': product_info
+        , 'product_info_html': product_info_html
+        , 'product_detail_info_html': product_detail_info_html
         , 'product_info_list': save_product_info
         , 'product_option_list': save_option_info
         , 'product_etc_info': save_etc_info
+        , 'product_img': save_product_img
+        , 'detail_img': save_detail_img
     }
     save_product = json.dumps(save_product)
     post_url = 'http://parkstore.test/api/product/save'
     data = {'encrypt_key': 'e8b6a94f577bd529c2e67da6aa449219', 'product_info': save_product}
     response = requests.post(post_url, data=data)
+    # todo 저장 완료 여부 확인 및 처리
     print(response.text)
 
     break # 테스트 한개만
