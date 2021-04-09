@@ -97,6 +97,17 @@ for product_no in product_list:
 
     print('상품 데이터 추출 시작:{}'.format(product_no))
 
+    # 대상 요소
+    el_product_name = browser.find_element_by_css_selector('.detailArea .item_name')
+    el_product_info = browser.find_element_by_css_selector('.detailArea .infoArea')
+
+    # 상품명
+    product_name = el_product_name.text
+    # 상품정보 전체 텍스트
+    product_info = el_product_info.text
+    # 상품정보 전체 HTML
+    product_info_html = el_product_info.get_attribute('innerHTML')
+
     # 메인 상품 이미지 파일 저장
     img_file_list = browser.find_elements_by_css_selector('.listImg img')
     img_idx = 1
@@ -117,17 +128,6 @@ for product_no in product_list:
             os.remove(img_file_full_path)
         os.system("curl {} > {}".format(img_url, img_file_full_path))
         img_idx = img_idx + 1
-
-    # 대상 요소
-    el_product_name = browser.find_element_by_css_selector('.detailArea .item_name')
-    el_product_info = browser.find_element_by_css_selector('.detailArea .infoArea')
-
-    # 상품명
-    product_name = el_product_name.text
-    # 상품정보 전체 텍스트
-    product_info = el_product_info.text
-    # 상품정보 전체 HTML
-    product_info_html = el_product_info.get_attribute('innerHTML')
 
     # 상품 정보 추출
     el_info_list = el_product_info.find_elements_by_css_selector('table tr')
@@ -182,6 +182,14 @@ for product_no in product_list:
             os.remove(img_file_full_path)
         os.system("curl {} > {}".format(img_full_url, img_file_full_path))
         img_idx = img_idx + 1
+
+    # 상품 구매 기타 정보 추출
+    prd_info_list = browser.find_elements_by_css_selector(".prd_info.-section")
+    for prd_info in prd_info_list:
+        info_title = prd_info.find_element_by_css_selector('.titleArea2').text
+        info_desc = prd_info.find_element_by_css_selector('.info_text').text
+        info_title = info_title.strip() # 기타 정보
+        info_desc = info_desc.strip() # 기타 정보
 
     product_idx = product_idx + 1
     browser.close()
