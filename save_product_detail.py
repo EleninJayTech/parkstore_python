@@ -43,6 +43,7 @@ browser = webdriver.Chrome(
 )
 
 # 초이템 로그인
+target_host = 'http://choitemb2b.com'
 url = "http://choitemb2b.com/member/login.html"
 browser.get(url)
 
@@ -70,6 +71,11 @@ file_path = "./_data/"
 file_name = 'cate_no_{}.json'.format(cate_no)
 file_full_path = file_path + file_name
 
+if os.path.exists(file_full_path) == False:
+    print('대상 파일이 없습니다.')
+    browser.close()
+    sys.exit()
+
 # json 데이터를 object 로
 with open(file_full_path) as f:
     product_list = json.load(f)
@@ -91,6 +97,27 @@ for product_no in product_list:
 
     print('상품 데이터 추출 시작:{}'.format(product_no))
 
+    # 메인 상품 이미지 파일 저장
+    img_file_list = browser.find_elements_by_css_selector('.listImg img')
+    img_idx = 1
+    for el_img in img_file_list:
+        # 테스트 용
+        # break
+        # time.sleep(delay_term)
+        img_url = el_img.get_attribute('src')
+        img_file_name = 'product_{}_{}.jpg'.format(product_no, img_idx)
+        # img_dir = '{}/'.format(product_no)
+        img_dir = ''
+        img_full_dir = file_path + img_dir
+        if os.path.exists(img_full_dir) == False:
+            os.makedirs(img_full_dir)
+
+        img_file_full_path = img_full_dir + img_file_name
+        if os.path.exists(img_file_full_path) == True:
+            os.remove(img_file_full_path)
+        os.system("curl {} > {}".format(img_url, img_file_full_path))
+        img_idx = img_idx + 1
+
     # 대상 요소
     el_product_name = browser.find_element_by_css_selector('.detailArea .item_name')
     el_product_info = browser.find_element_by_css_selector('.detailArea .infoArea')
@@ -102,15 +129,49 @@ for product_no in product_list:
     # 상품정보 전체 HTML
     product_info_html = el_product_info.get_attribute('innerHTML')
 
-    # 이미지 파일 저장
-    img_file_list = browser.find_elements_by_css_selector('.listImg img')
-    img_idx = 1
-    for el_img in img_file_list:
-        time.sleep(delay_term)
-        img_url = el_img.get_attribute('src')
+    # 상품 정보 추출
+    el_info_list = el_product_info.find_elements_by_css_selector('table tr')
+    for info_list in el_info_list:
+        try:
+            info_name = info_list.find_element_by_tag_name('th').text
+            info_value = info_list.find_element_by_tag_name('td').text
+            info_name=info_name.strip()
+            info_value=info_value.strip()
+            # print(info_name, info_value)
+        except:
+            # print('[예외 발생] {}'.format(info_list))
+            continue
 
-        img_file_name = 'p_{}_{}.jpg'.format(product_no, img_idx)
-        # img_dir = '{}/'.format(product_no)
+    # 옵션 정보
+    el_option_list = browser.find_elements_by_css_selector('.infoArea table.xans-product-option tr')
+    for option_list in el_option_list:
+        try:
+            # 옵션 명
+            option_name = option_list.find_element_by_tag_name('th').text
+            option_name=option_name.strip()
+
+            # 옵션 값
+            el_option_value = option_list.find_element_by_tag_name('td')
+            option_value_html = el_option_value.get_attribute('innerHTML')
+            option_value = el_option_value.text
+            option_value=option_value.strip()
+        except:
+            # print('[예외 발생] {}'.format(option_list))
+            continue
+
+    # 상세 정보
+    el_product_detail_info = browser.find_element_by_css_selector('#prdDetail > .cont')
+    # 상세 정보 HTML
+    product_detail_info_html = el_product_detail_info.get_attribute('innerHTML')
+
+    # 상세 정보 이미지 다운로드
+    detail_img_list = el_product_detail_info.find_elements_by_tag_name('img')
+    img_idx = 1
+    for el_img in detail_img_list:
+        # time.sleep(delay_term)
+        img_url = el_img.get_attribute('ec-data-src')
+        img_full_url = '{}{}'.format(target_host, img_url)
+        img_file_name = 'product_{}_detail_{}.jpg'.format(product_no, img_idx)
         img_dir = ''
         img_full_dir = file_path + img_dir
         if os.path.exists(img_full_dir) == False:
@@ -119,7 +180,7 @@ for product_no in product_list:
         img_file_full_path = img_full_dir + img_file_name
         if os.path.exists(img_file_full_path) == True:
             os.remove(img_file_full_path)
-        os.system("curl " + img_url + " > {}".format(img_file_full_path))
+        os.system("curl {} > {}".format(img_full_url, img_file_full_path))
         img_idx = img_idx + 1
 
     product_idx = product_idx + 1
