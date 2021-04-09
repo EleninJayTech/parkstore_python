@@ -5,7 +5,9 @@ import json
 import os
 import sys
 import time
+import requests
 
+shop_code = 'choitem'
 cate_no = 28
 
 # 디바이스
@@ -55,6 +57,7 @@ config = configparser.ConfigParser()
 config.read('./secure.ini')
 login_id = config['choitem']['id']
 login_pwd = config['choitem']['pwd']
+encrypt_key = config['choitem']['encrypt_key']
 
 # 로그인
 input_id = browser.find_element_by_name('member_id')
@@ -86,7 +89,7 @@ for product_no in product_list:
     print('상품 페이지로 이동:{}'.format(product_no))
     time.sleep(delay_term)
     browser.switch_to.window(browser.window_handles[0])
-
+    
     # 상품링크
     product_link = product_list[product_no]
     # 상품 새탭 열기
@@ -131,19 +134,25 @@ for product_no in product_list:
 
     # 상품 정보 추출
     el_info_list = el_product_info.find_elements_by_css_selector('table tr')
+    save_product_info = []
+    for_in_seq = 1
     for info_list in el_info_list:
         try:
             info_name = info_list.find_element_by_tag_name('th').text
             info_value = info_list.find_element_by_tag_name('td').text
             info_name=info_name.strip()
             info_value=info_value.strip()
+            save_product_info.append({'info_name':info_name, 'info_value':info_value, 'seq':for_in_seq})
             # print(info_name, info_value)
+            for_in_seq = for_in_seq + 1
         except:
             # print('[예외 발생] {}'.format(info_list))
             continue
 
     # 옵션 정보
     el_option_list = browser.find_elements_by_css_selector('.infoArea table.xans-product-option tr')
+    save_option_info = []
+    for_in_seq = 1
     for option_list in el_option_list:
         try:
             # 옵션 명
@@ -155,6 +164,8 @@ for product_no in product_list:
             option_value_html = el_option_value.get_attribute('innerHTML')
             option_value = el_option_value.text
             option_value=option_value.strip()
+            save_option_info.append({'option_name': option_name, 'option_value': option_value, 'seq': for_in_seq})
+            for_in_seq = for_in_seq + 1
         except:
             # print('[예외 발생] {}'.format(option_list))
             continue
@@ -185,14 +196,37 @@ for product_no in product_list:
 
     # 상품 구매 기타 정보 추출
     prd_info_list = browser.find_elements_by_css_selector(".prd_info.-section")
+    save_etc_info = []
+    for_in_seq = 1
     for prd_info in prd_info_list:
         info_title = prd_info.find_element_by_css_selector('.titleArea2').text
         info_desc = prd_info.find_element_by_css_selector('.info_text').text
         info_title = info_title.strip() # 기타 정보
         info_desc = info_desc.strip() # 기타 정보
+        save_etc_info.append({'info_title': info_title, 'info_desc': info_desc, 'seq': for_in_seq})
+        for_in_seq = for_in_seq + 1
 
     product_idx = product_idx + 1
     browser.close()
+
+    # 데이터 저장
+    # DB 저장될 데이터 취합
+    save_product = {
+        'shop_code': shop_code
+        , 'product_no': product_no
+        , 'product_link': product_link
+        , 'product_name': product_name
+        , 'product_info': product_info
+        , 'product_info_list': save_product_info
+        , 'product_option_list': save_option_info
+        , 'product_etc_info': save_etc_info
+    }
+    save_product = json.dumps(save_product)
+    post_url = 'http://parkstore.test/api/product/save'
+    data = {'encrypt_key': 'e8b6a94f577bd529c2e67da6aa449219', 'product_info': save_product}
+    response = requests.post(post_url, data=data)
+    print(response.text)
+
     break # 테스트 한개만
 
 browser.switch_to.window(browser.window_handles[0])
