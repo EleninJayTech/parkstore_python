@@ -235,7 +235,7 @@ for product_no in product_list:
     }
     save_product = json.dumps(save_product)
     post_url = 'http://parkstore.test/api/product/save'
-    data = {'encrypt_key': 'e8b6a94f577bd529c2e67da6aa449219', 'product_info': save_product}
+    data = {'encrypt_key': 'e8b6a94f577bd529c2e67da6aa449219', 'product': save_product}
     response = requests.post(post_url, data=data)
     # todo 저장 완료 여부 확인 및 처리
     print(response.text)
