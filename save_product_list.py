@@ -104,7 +104,7 @@ for cate_no in category_list:
     # 페이지별 상품 링크 수집
     goods_links = {}
     for tab_name in browser_info:
-        time.sleep(delay_term)
+        # time.sleep(delay_term)
         move_tab_idx = browser_info.index(tab_name) + 1
         browser.switch_to.window(browser.window_handles[move_tab_idx])
         goods_wrap = browser.find_elements_by_css_selector('li.item.DB_rate')
