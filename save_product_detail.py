@@ -150,7 +150,7 @@ for product_no in product_list:
             # print(info_name, info_value)
             for_in_seq = for_in_seq + 1
         except:
-            # print('[예외 발생] {}'.format(info_list))
+            print('[예외 발생] {}'.format(info_list))
             continue
 
     # 옵션 정보
@@ -166,12 +166,21 @@ for product_no in product_list:
             # 옵션 값
             el_option_value = option_list.find_element_by_tag_name('td')
             option_value_html = el_option_value.get_attribute('innerHTML')
-            option_value = el_option_value.text
-            option_value=option_value.strip()
-            save_option_info.append({'option_name': option_name, 'option_value': option_value, 'seq': for_in_seq})
-            for_in_seq = for_in_seq + 1
+            select_option_list = el_option_value.find_elements_by_css_selector('option')
+            if len(select_option_list) > 0:
+                for in_option in select_option_list:
+                    option_value = in_option.text
+                    option_value = option_value.strip()
+                    save_option_info.append({'option_name': option_name, 'option_value': option_value, 'seq': for_in_seq})
+                    for_in_seq = for_in_seq + 1
+            else:
+                option_value = el_option_value.text
+                option_value=option_value.strip()
+                save_option_info.append({'option_name': option_name, 'option_value': option_value, 'seq': for_in_seq})
+                for_in_seq = for_in_seq + 1
+
         except:
-            # print('[예외 발생] {}'.format(option_list))
+            print('[예외 발생] {}'.format(option_list))
             continue
 
     # 상세 정보
@@ -240,7 +249,7 @@ for product_no in product_list:
     # todo 저장 완료 여부 확인 및 처리
     print(response.text)
 
-    break # 테스트 한개만
+    # break # 테스트 한개만
 
 browser.switch_to.window(browser.window_handles[0])
 browser.close()
