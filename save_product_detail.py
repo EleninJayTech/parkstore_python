@@ -1,3 +1,5 @@
+from random import randrange
+
 from selenium import webdriver
 
 import configparser
@@ -233,6 +235,7 @@ for product_no in product_list:
     el_query.send_keys(product_name)
     el_search_btn = browser.find_element_by_css_selector('.co_srh_btn')
     # 상품명 검색
+    time.sleep(randrange(3,6))
     el_search_btn.click()
     time.sleep(delay_term)
     # 카테고리 링크 정보
