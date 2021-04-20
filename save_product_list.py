@@ -121,7 +121,9 @@ for cate_no in category_list:
     if os.path.exists(file_path) == False:
         os.makedirs(file_path)
     file_name = 'cate_no_{}.json'.format(cate_no)
-    f = open(file_path + file_name, 'w')
+    file_full_path = file_path + file_name
+    os.remove(file_full_path)
+    f = open(file_full_path, 'w')
     f.write(jsonString)
     f.close()
     print("[SAVE] {}".format(file_name))

@@ -6,6 +6,7 @@ import os
 import sys
 import time
 import requests
+import re
 
 shop_code = 'choitem'
 cate_no = 28
@@ -225,10 +226,39 @@ for product_no in product_list:
         for_in_seq = for_in_seq + 1
 
     product_idx = product_idx + 1
+
+    # 카테고리 코드 가져오기
+    browser.get('https://shopping.naver.com/')
+    el_query = browser.find_element_by_name('query')
+    el_query.send_keys(product_name)
+    el_search_btn = browser.find_element_by_css_selector('.co_srh_btn')
+    # 상품명 검색
+    el_search_btn.click()
+    time.sleep(delay_term)
+    # 카테고리 링크 정보
+    el_cate_depth = browser.find_element_by_css_selector('[class^=basicList_depth]')
+    cate_a = el_cate_depth.find_elements_by_tag_name('a')
+    cate_depth = len(cate_a)
+    print(cate_a)
+    cate_no = 0
+    cate_depth_text = []
+    if cate_depth > 0:
+        # 링크에서 카테고리 번호만 추출
+        cate_href = cate_a[cate_depth - 1].get_attribute('href')
+        cate_no = re.findall("\d+", cate_href)[0]
+
+        # 카테고리 명칭 가져오기
+        for cate_info in cate_a:
+            cate_txt = cate_info.text
+            cate_depth_text.append(cate_txt)
+
+    # print(cate_no, cate_depth_text)
+    # exit()
     browser.close()
 
     # 데이터 저장
     # DB 저장될 데이터 취합
+    # print(product_no)
     save_product = {
         'shop_code': shop_code
         , 'product_no': product_no
@@ -241,6 +271,8 @@ for product_no in product_list:
         , 'product_option_list': save_option_info
         , 'product_etc_info': save_etc_info
         , 'product_img': save_product_img
+        , 'category_code': cate_no
+        , 'cate_depth_text': cate_depth_text
         , 'detail_img': save_detail_img
     }
     save_product = json.dumps(save_product)
