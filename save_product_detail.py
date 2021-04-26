@@ -11,6 +11,13 @@ import time
 import requests
 import re
 
+from requests import get  # to make GET request
+
+def download(url, file_name):
+    with open(file_name, "wb") as file:   # open in binary mode
+        response = get(url)               # get request
+        file.write(response.content)      # write to file
+
 shop_code = 'choitem'
 cate_no = 28
 
@@ -309,7 +316,10 @@ for product_no in product_list:
     # break # 테스트 한개만
 
 # 고유 코드 엑셀 다운로드
-os.system("curl {} > {}".format('http://parkstore.test/product/createExcel/{}'.format(PK_CODE), '{}Excel_{}.xlsx'.format(file_path, PK_CODE)))
+url = 'http://parkstore.test/product/createExcel/{}'.format(PK_CODE)
+file_path = "./_data/"
+excel_full_path = '{}Excel_{}.xlsx'.format(file_path, PK_CODE)
+download(url, excel_full_path)
 
 browser.switch_to.window(browser.window_handles[0])
 browser.close()
