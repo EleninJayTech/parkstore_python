@@ -1,3 +1,4 @@
+import datetime
 from random import randrange
 
 from selenium import webdriver
@@ -86,11 +87,26 @@ if os.path.exists(file_full_path) == False:
 with open(file_full_path) as f:
     product_list = json.load(f)
 
-# todo 고유 코드 생성
+# 고유 코드 생성
+now = datetime.datetime.now()
+PK_CODE = now.strftime("%Y%m%d%H%M%S")
+
 # 상품 번호와 상품 URL 추출
 product_idx = 0
+
+post_url = 'http://parkstore.test/api/exist_pno'
+data = {'encrypt_key': 'e8b6a94f577bd529c2e67da6aa449219'}
+response = requests.post(post_url, data=data)
+exist_pno_list = json.loads(response.text)
+exist_check_pno = []
+for pno in exist_pno_list:
+    exist_check_pno.append(int(pno['product_no']))
+
 for product_no in product_list:
-    # todo 제외할 상품 확인 후 continue 존재하는 상품 패스
+    # 제외할 상품 확인 후 continue 존재하는 상품 패스
+    if int(product_no) in exist_check_pno:
+        print('존재 상품 제외 {}'.format(product_no))
+        continue
 
     print('상품 페이지로 이동:{}'.format(product_no))
     time.sleep(delay_term)
@@ -265,7 +281,7 @@ for product_no in product_list:
     # 데이터 저장
     # DB 저장될 데이터 취합
     # print(product_no)
-    # todo 고유코드 저장
+    # 고유코드 저장
     save_product = {
         'shop_code': shop_code
         , 'product_no': product_no
@@ -281,6 +297,7 @@ for product_no in product_list:
         , 'category_code': cate_no
         , 'cate_depth_text': cate_depth_text
         , 'detail_img': save_detail_img
+        , 'PK_CODE': PK_CODE
     }
     save_product = json.dumps(save_product)
     post_url = 'http://parkstore.test/api/product_save'
