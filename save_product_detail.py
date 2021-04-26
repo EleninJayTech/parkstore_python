@@ -86,9 +86,12 @@ if os.path.exists(file_full_path) == False:
 with open(file_full_path) as f:
     product_list = json.load(f)
 
+# todo 고유 코드 생성
 # 상품 번호와 상품 URL 추출
 product_idx = 0
 for product_no in product_list:
+    # todo 제외할 상품 확인 후 continue 존재하는 상품 패스
+
     print('상품 페이지로 이동:{}'.format(product_no))
     time.sleep(delay_term)
     browser.switch_to.window(browser.window_handles[0])
@@ -262,6 +265,7 @@ for product_no in product_list:
     # 데이터 저장
     # DB 저장될 데이터 취합
     # print(product_no)
+    # todo 고유코드 저장
     save_product = {
         'shop_code': shop_code
         , 'product_no': product_no
@@ -286,6 +290,8 @@ for product_no in product_list:
     print(response.text)
 
     # break # 테스트 한개만
+
+# todo 고유 코드 엑셀 다운로드
 
 browser.switch_to.window(browser.window_handles[0])
 browser.close()
