@@ -308,7 +308,8 @@ for product_no in product_list:
 
     # break # 테스트 한개만
 
-# todo 고유 코드 엑셀 다운로드
+# 고유 코드 엑셀 다운로드
+os.system("curl {} > {}".format('http://parkstore.test/product/createExcel/{}'.format(PK_CODE), '{}Excel_{}'.format(file_path, PK_CODE)))
 
 browser.switch_to.window(browser.window_handles[0])
 browser.close()
