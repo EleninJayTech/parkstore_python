@@ -68,7 +68,7 @@ if input_id is not None:
 category_list = [28]
 #  페이지
 # page_list = range(1, 10)
-page_list = [1]
+page_list = [2]
 
 for cate_no in category_list:
     print('카테고리 이동 {}'.format(cate_no))
