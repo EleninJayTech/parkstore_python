@@ -227,7 +227,7 @@ for product_no in product_list:
         img_url = el_img.get_attribute('ec-data-src')
         img_full_url = '{}{}'.format(target_host, img_url)
         img_file_name = 'product_{}_detail_{}.jpg'.format(product_no, img_idx)
-        img_dir = ''
+        img_dir = 'detail/'
         img_full_dir = file_path + img_dir
         if os.path.exists(img_full_dir) == False:
             os.makedirs(img_full_dir)
@@ -236,7 +236,7 @@ for product_no in product_list:
         if os.path.exists(img_file_full_path) == True:
             os.remove(img_file_full_path)
         # 상세 이미지는 우선 다운 받지 말고 정보만 추출
-        # os.system("curl {} > {}".format(img_full_url, img_file_full_path))
+        os.system("curl {} > {}".format(img_full_url, img_file_full_path))
         img_idx = img_idx + 1
         save_detail_img.append({'img_url': img_url, 'img_file_name': img_file_name, 'img_file_full_path': img_file_full_path, 'seq': for_in_seq})
         for_in_seq = for_in_seq + 1
