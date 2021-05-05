@@ -160,7 +160,7 @@ for product_no in product_list:
         img_file_full_path = img_full_dir + img_file_name
         if os.path.exists(img_file_full_path) == True:
             os.remove(img_file_full_path)
-        os.system("curl {} > {}".format(img_url, img_file_full_path))
+        os.system('curl "{}" > "{}"'.format(img_url, img_file_full_path))
         img_idx = img_idx + 1
         save_product_img.append({'img_url': img_url, 'img_file_name': img_file_name, 'img_file_full_path': img_file_full_path, 'seq': for_in_seq})
         for_in_seq = for_in_seq + 1
@@ -222,11 +222,12 @@ for product_no in product_list:
     img_idx = 1
     save_detail_img = []
     for_in_seq = 1
+    img_nm = re.sub(r'[^가-힣a-zA-Z0-9 ]', ' ', product_name)
     for el_img in detail_img_list:
         # time.sleep(delay_term)
         img_url = el_img.get_attribute('ec-data-src')
         img_full_url = '{}{}'.format(target_host, img_url)
-        img_file_name = 'product_{}_detail_{}.jpg'.format(product_no, img_idx)
+        img_file_name = '{}_{}_{}.jpg'.format(product_no, img_nm, img_idx)
         img_dir = 'detail/'
         img_full_dir = file_path + img_dir
         if os.path.exists(img_full_dir) == False:
@@ -236,7 +237,7 @@ for product_no in product_list:
         if os.path.exists(img_file_full_path) == True:
             os.remove(img_file_full_path)
         # 상세 이미지는 우선 다운 받지 말고 정보만 추출
-        os.system("curl {} > {}".format(img_full_url, img_file_full_path))
+        os.system('curl "{}" > "{}"'.format(img_full_url, img_file_full_path))
         img_idx = img_idx + 1
         save_detail_img.append({'img_url': img_url, 'img_file_name': img_file_name, 'img_file_full_path': img_file_full_path, 'seq': for_in_seq})
         for_in_seq = for_in_seq + 1
