@@ -151,7 +151,7 @@ for product_no in product_list:
         # time.sleep(delay_term)
         img_url = el_img.get_attribute('src')
         basename = os.path.basename(img_url)
-        ext = os.path.splitext(basename)
+        i_name, ext = os.path.splitext(basename)
         img_file_name = 'product_{}_{}.{}'.format(product_no, img_idx, ext)
         # img_dir = '{}/'.format(product_no)
         img_dir = ''
@@ -197,8 +197,18 @@ for product_no in product_list:
             # 옵션 값
             el_option_value = option_list.find_element_by_tag_name('td')
             option_value_html = el_option_value.get_attribute('innerHTML')
+
+            ul_option_list = el_option_value.find_elements_by_css_selector('ul[option_select_element="ec-option-select-finder"] > li')
             select_option_list = el_option_value.find_elements_by_css_selector('option')
-            if len(select_option_list) > 0:
+            # 버튼형 옵션
+            if len(ul_option_list) > 0 :
+                for in_option in ul_option_list:
+                    option_value = in_option.get_attribute('title')
+                    option_value = option_value.strip()
+                    save_option_info.append({'option_name': option_name, 'option_value': option_value, 'seq': for_in_seq})
+                    for_in_seq = for_in_seq + 1
+            # 셀렉트 박스 형 옵션
+            elif len(select_option_list) > 0:
                 for in_option in select_option_list:
                     option_value = in_option.text
                     option_value = option_value.strip()
@@ -229,7 +239,7 @@ for product_no in product_list:
         # time.sleep(delay_term)
         img_url = el_img.get_attribute('ec-data-src')
         basename = os.path.basename(img_url)
-        ext = os.path.splitext(basename)
+        i_name, ext = os.path.splitext(basename)
         img_full_url = '{}{}'.format(target_host, img_url)
         img_file_name = '{}_{}_{}.{}'.format(product_no, img_nm, img_idx, ext)
         img_dir = 'detail/'
