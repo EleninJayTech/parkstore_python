@@ -12,7 +12,7 @@ import time
 import json
 
 # 사이트 코드
-site = 'goodsdeco'
+shop_code = 'goodsdeco'
 # 메인 URL
 main_host = 'http://www.goodsdeco.com'
 # 로그인 경로
@@ -25,7 +25,7 @@ formName_Password = 'loginPwd'
 login_btn_selector = "#formLogin button[type='submit']"
 
 # 목록 가져올 페이지
-list_page_url = 'http://www.goodsdeco.com/goods/goods_list.php?cateCd=008'
+list_page_url = 'http://www.goodsdeco.com/goods/goods_list.php?cateCd=004001'
 # 상품 element
 product_list_selector = '.item_basket_type ul li .item_cont'
 # 상품 정보 수정 영역 << 해당 영역 검색후 수정 필요
@@ -74,8 +74,8 @@ browser.get(url)
 # 로그인 정보 가져오기
 config = configparser.ConfigParser()
 config.read('../secure.ini')
-login_id = config[site]['id']
-login_pwd = config[site]['pwd']
+login_id = config[shop_code]['id']
+login_pwd = config[shop_code]['pwd']
 
 # 로그인
 input_id = browser.find_element_by_name(formName_Login)
@@ -90,6 +90,7 @@ if input_id is not None:
     login_script = '$(".login_input_sec button").click();'
     browser.execute_script(login_script)
     print('로그인 완료')
+
 time.sleep(delay_term)
 # 브라우저 정보 기록
 browser_info = []
@@ -127,21 +128,26 @@ for tab_name in browser_info:
     print('상품 링크 수집 시작 {}'.format(move_tab_idx))
     # 상품 정보 수정 영역
     for goods_html in goods_wrap:
-        # 링크
-        product_link = goods_html.find_element_by_css_selector('a.btn_detail').get_attribute('href')
-        # 상품번호
-        product_no_attr = goods_html.find_element_by_css_selector('.item_link .btn_basket_cart')
-        product_no = product_no_attr.get_attribute('data-goods-no')
-        goods_links[product_no] = product_link
+        try:
+            # 링크
+            el_product_link = goods_html.find_element_by_css_selector('a.btn_detail')
+            product_link = el_product_link.get_attribute('href')
+            # 상품번호
+            product_no_attr = goods_html.find_element_by_css_selector('.item_link .btn_basket_cart')
+            product_no = product_no_attr.get_attribute('data-goods-no')
+            goods_links[product_no] = product_link
+        except:
+            continue
+
 jsonString = json.dumps(goods_links)
 
 # 파일로 저장
-file_path = "../_data/{}/".format(site)
+file_path = "../_data/{}/".format(shop_code)
 if os.path.exists(file_path) == False:
     os.makedirs(file_path)
 now = datetime.datetime.now()
-w_time = now.strftime('%Y%m%d%H%M%S')
-file_name = '{}_{}.json'.format(site, w_time)
+w_time = now.strftime('%Y%m%d%H%M')
+file_name = '{}_{}.json'.format(shop_code, w_time)
 file_full_path = file_path + file_name
 if os.path.exists(file_full_path) == True:
     os.remove(file_full_path)
