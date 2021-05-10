@@ -32,7 +32,7 @@ formName_Password = 'loginPwd'
 login_btn_selector = "#formLogin button[type='submit']"
 
 # 처리할 파일
-file_name = 'goodsdeco_20210510021556.json'
+file_name = 'goodsdeco_202105110014.json'
 
 # 디바이스
 current_device = 'pc'
@@ -335,10 +335,10 @@ for product_no in product_list:
     # break
 
 # 고유 코드 엑셀 다운로드
-# url = 'http://parkstore.test/product/createExcel/{}'.format(PK_CODE)
-# file_path = "../_data/"
-# excel_full_path = '{}Excel_{}.xlsx'.format(file_path, PK_CODE)
-# download(url, excel_full_path)
+url = 'http://parkstore.test/product/createExcel/{}'.format(PK_CODE)
+file_path = "../_data/{}/".format(shop_code)
+excel_full_path = '{}Excel_{}.xlsx'.format(file_path, PK_CODE)
+download(url, excel_full_path)
 
 browser.switch_to.window(browser.window_handles[0])
 browser.close()
