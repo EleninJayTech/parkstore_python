@@ -25,7 +25,7 @@ formName_Password = 'loginPwd'
 login_btn_selector = "#formLogin button[type='submit']"
 
 # 목록 가져올 페이지
-list_page_url = 'http://www.goodsdeco.com/goods/goods_list.php?cateCd=004001'
+list_page_url = 'http://goodsdeco.com/goods/goods_list.php?cateCd=001&sort=&pageNum=20'
 # 상품 element
 product_list_selector = '.item_basket_type ul li .item_cont'
 # 상품 정보 수정 영역 << 해당 영역 검색후 수정 필요

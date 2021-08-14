@@ -19,7 +19,7 @@ def download(url, file_name):
         file.write(response.content)      # write to file
 
 shop_code = 'choitem'
-cate_no = 28
+cate_no = 46
 
 # 디바이스
 current_device = 'pc'
