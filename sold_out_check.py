@@ -124,7 +124,8 @@ for product_info in shop_sold_check_list:
         post_url = 'http://parkstore.test/shop_manage/set_shop_sold_out/{}/y'.format(product_code)
         response = requests.post(post_url)
         shop_sold_out_return = json.loads(response.text)
-        print(shop_sold_out_return['result'])
+        _print = '{} {}'.format(product_code, shop_sold_out_return['result'])
+        print(_print)
 
 # 새탭 브라우저 종료
 for tab_info in browser_info:
@@ -140,8 +141,10 @@ browser.quit()
 post_url = 'http://parkstore.test/shop_manage/fetch_product_list'
 response = requests.post(post_url)
 fetch_product_list = json.loads(response.text)
+print("[품절 확인 필요 상품 코드]")
 for fetch_list in fetch_product_list:
-    print(fetch_list['product_code'])
+    _print = '{}'.format(fetch_list['product_code'])
+    print(_print)
 
 # 종료
 sys.exit()
