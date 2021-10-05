@@ -1,3 +1,5 @@
+import re
+
 from selenium import webdriver
 from datetime import datetime
 
@@ -105,7 +107,22 @@ for product_info in shop_sold_check_list:
     goods_link_btn = good_info.find_element_by_css_selector('.name a')
     goods_link_btn.click()
 
-    break # 테스트용 한번만 돌기
+    sold_out = False
+    el_product_option_li = browser.find_elements_by_css_selector('select[product_type="product_option"]')
+    if len(el_product_option_li) > 0 :
+        for product_option in el_product_option_li:
+            p_t = product_option.text
+            # 품절
+            품절 = re.findall("품절", p_t)
+            if len(품절) > 0 :
+                # 품절임
+                sold_out = True
+                break
+
+    if sold_out == True :
+        # 스토어 품절로 교체
+        # product_code
+        tetete = 'a'
 
 # 새탭 브라우저 종료
 for tab_info in browser_info:
