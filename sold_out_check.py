@@ -121,8 +121,10 @@ for product_info in shop_sold_check_list:
 
     if sold_out == True :
         # 스토어 품절로 교체
-        # product_code
-        tetete = 'a'
+        post_url = 'http://parkstore.test/shop_manage/set_shop_sold_out/{}/y'.format(product_code)
+        response = requests.post(post_url)
+        shop_sold_out_return = json.loads(response.text)
+        print(shop_sold_out_return['result'])
 
 # 새탭 브라우저 종료
 for tab_info in browser_info:
@@ -132,6 +134,14 @@ for tab_info in browser_info:
 # 메인 브라우저 닫기
 browser.switch_to.window(browser.window_handles[0])
 browser.close()
-# 드라이버 종료
 browser.quit()
+
+# 도매처 품절이지만 스토어 품절 아닌 상품 목록
+post_url = 'http://parkstore.test/shop_manage/fetch_product_list'
+response = requests.post(post_url)
+fetch_product_list = json.loads(response.text)
+for fetch_list in fetch_product_list:
+    print(fetch_list['product_code'])
+
+# 종료
 sys.exit()
