@@ -77,6 +77,7 @@ tab_no = 0
 for product_info in shop_sold_check_list:
     time.sleep(delay_term)
     tab_no = tab_no + 1
+    print(tab_no)
 
     product_code = product_info['product_code']
 
@@ -92,7 +93,7 @@ for product_info in shop_sold_check_list:
     # 브라우저 정보 순서대로 윈도우 번호 호출
     move_tab_idx = browser_info.index(tab_name) + 1
     # 탭 변경
-    browser.switch_to.window(browser.window_handles[move_tab_idx])
+    browser.switch_to.window(browser.window_handles[1])
 
     # 상품 있는지 확인
     goods_items = browser.find_elements_by_css_selector('li.item.DB_rate')
@@ -100,8 +101,10 @@ for product_info in shop_sold_check_list:
     if len(goods_items) == 0:
         # 브라우저 정보 삭제
         browser_info.remove(tab_name)
+        browser.switch_to.window(browser.window_handles[1])
         browser.close()
-        break
+        browser.switch_to.window(browser.window_handles[0])
+        continue
 
     good_info = goods_items[0]
     goods_link_btn = good_info.find_element_by_css_selector('.name a')
@@ -127,10 +130,14 @@ for product_info in shop_sold_check_list:
         _print = '{} {}'.format(product_code, shop_sold_out_return['result'])
         print(_print)
 
-# 새탭 브라우저 종료
-for tab_info in browser_info:
     browser.switch_to.window(browser.window_handles[1])
     browser.close()
+    browser.switch_to.window(browser.window_handles[0])
+
+# 새탭 브라우저 종료
+# for tab_info in browser_info:
+#     browser.switch_to.window(browser.window_handles[1])
+#     browser.close()
 
 # 메인 브라우저 닫기
 browser.switch_to.window(browser.window_handles[0])
